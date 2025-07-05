@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="form-row">
                 <div class="form-group">
                     <label for="start-time-${rowCounter}">開始時間</label>
-                    <input type="time" id="start-time-${rowCounter}" name="start-time-${rowCounter}" step="300" value="${data.startTime || ''}">
+                    <input type="time" id="start-time-${rowCounter}" name="start-time-${rowCounter}" step="300" value="${data.startTime || '08:00'}">
                 </div>
                 <div class="form-group">
                     <label for="end-time-${rowCounter}">終了時間</label>
@@ -146,8 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     addRowButton.addEventListener('click', () => {
+        const entryBlocks = form.querySelectorAll('.entry-block');
+        const lastEntryBlock = entryBlocks[entryBlocks.length - 1];
+        const lastEndTime = lastEntryBlock.querySelector('[name^="end-time"]').value;
+
         // Use currentSaveDate for new rows
-        form.appendChild(createEntryBlockElement({ date: currentSaveDate, name: name }));
+        form.appendChild(createEntryBlockElement({ date: currentSaveDate, name: name, startTime: lastEndTime }));
     });
 
     saveButton.addEventListener('click', () => {
