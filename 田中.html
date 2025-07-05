@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業票入力 - 田中</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>作業票入力 - 田中</h1>
+        <form id="work-sheet-form">
+            <div class="entry-block">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">日付</label>
+                        <input type="date" id="date" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">名前</label>
+                        <input type="text" id="name" name="name" value="田中" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="work-number">工作番号</label>
+                        <input type="text" id="work-number" name="work-number">
+                    </div>
+                    <div class="form-group">
+                        <label for="mold-number">金型番号</label>
+                        <input type="text" id="mold-number" name="mold-number">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-number">作業番号</label>
+                        <input type="text" id="task-number" name="task-number">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-time">開始時間</label>
+                        <input type="time" id="start-time" name="start-time" step="300">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-time">終了時間</label>
+                        <input type="time" id="end-time" name="end-time" step="300">
+                    </div>
+                    <div class="form-group">
+                        <label for="work-content">作業内容</label>
+                        <input type="text" id="work-content" name="work-content">
+                    </div>
+                    <div class="form-group">
+                        <label for="remarks1">備考1</label>
+                        <input type="text" id="remarks1" name="remarks1">
+                    </div>
+                    <div class="form-group">
+                        <label for="remarks2">備考2</label>
+                        <input type="text" id="remarks2" name="remarks2">
+                    </div>
+                </div>
+                <button type="button" class="delete-row">削除</button>
+            </div>
+        </form>
+        <button id="add-row">行を追加</button>
+        <div class="button-container">
+            <button id="save">保存</button>
+            <button id="calendar-link" type="button">カレンダーに戻る</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

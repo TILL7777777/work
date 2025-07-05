@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>作業者を選択してください</h1>
+        <div class="name-grid">
+            <a href="calendar.html?name=幸徳" class="name-button">幸徳</a>
+            <a href="calendar.html?name=高木" class="name-button">高木</a>
+            <a href="calendar.html?name=堀井" class="name-button">堀井</a>
+            <a href="calendar.html?name=藤原" class="name-button">藤原</a>
+            <a href="calendar.html?name=松尾" class="name-button">松尾</a>
+            <a href="calendar.html?name=小田" class="name-button">小田</a>
+            <a href="calendar.html?name=甲斐" class="name-button">甲斐</a>
+            <a href="calendar.html?name=加智" class="name-button">加智</a>
+            <a href="calendar.html?name=横井" class="name-button">横井</a>
+            <a href="calendar.html?name=近岡" class="name-button">近岡</a>
+            <a href="calendar.html?name=田中" class="name-button">田中</a>
+            <a href="calendar.html?name=小林" class="name-button">小林</a>
+            <a href="calendar.html?name=林田" class="name-button">林田</a>
+            <a href="calendar.html?name=土田" class="name-button">土田</a>
+            <a href="calendar.html?name=千田" class="name-button">千田</a>
+            <a href="calendar.html?name=山田" class="name-button">山田</a>
+            <a href="calendar.html?name=後藤" class="name-button">後藤</a>
+            <a href="calendar.html?name=出口" class="name-button">出口</a>
+            <a href="calendar.html?name=松浦" class="name-button">松浦</a>
+            <a href="calendar.html?name=中嶋" class="name-button">中嶋</a>
+            <a href="calendar.html?name=梁村" class="name-button">梁村</a>
+        </div>
+        <button id="confirmation-button" style="margin-top: 20px; padding: 10px 20px; font-size: 1.2rem; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">確認</button>
+        <button id="aggregate-button" style="margin-top: 20px; padding: 10px 20px; font-size: 1.2rem; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">集計</button>
+    </div>
+    <script>
+        document.getElementById('confirmation-button').addEventListener('click', () => {
+            window.location.href = 'confirmation.html';
+        });
+        document.getElementById('aggregate-button').addEventListener('click', () => {
+            window.location.href = 'aggregate.html';
+        });
+    </script>
+</body>
+</html>

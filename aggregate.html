@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業票集計</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .aggregate-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .aggregate-container h1 {
+            margin-bottom: 20px;
+        }
+        .date-selection {
+            margin-bottom: 20px;
+        }
+        .date-selection label {
+            margin-right: 10px;
+        }
+        .date-selection input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .aggregate-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .aggregate-container button:hover {
+            background-color: #218838;
+        }
+        .back-button {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container aggregate-container">
+        <h1>作業票集計</h1>
+        <div class="date-selection">
+            <label for="start-date">開始日:</label>
+            <input type="date" id="start-date">
+            <label for="end-date">終了日:</label>
+            <input type="date" id="end-date">
+        </div>
+        <button id="export-csv">CSV出力</button>
+        <button id="back-to-login" class="back-button">ログイン画面に戻る</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            const exportCsvButton = document.getElementById('export-csv');
+            const backToLoginButton = document.getElementById('back-to-login');
+
+            const allMembers = [
+                '幸徳', '高木', '堀井', '藤原', '松尾', '小田', '甲斐', '加智', '横井',
+                '近岡', '田中', '小林', '林田', '土田', '千田', '山田', '後藤', '出口', '松浦', '中嶋', '梁村'
+            ];
+
+            exportCsvButton.addEventListener('click', () => {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                if (!startDate || !endDate) {
+                    alert('開始日と終了日を選択してください。');
+                    return;
+                }
+
+                if (new Date(startDate) > new Date(endDate)) {
+                    alert('開始日は終了日より前の日付を選択してください。');
+                    return;
+                }
+
+                let allEntries = [];
+
+                allMembers.forEach(member => {
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.startsWith(`${member}_`)) {
+                            const date = key.substring(key.indexOf('_') + 1);
+                            if (date >= startDate && date <= endDate) {
+                                try {
+                                    const data = JSON.parse(localStorage.getItem(key));
+                                    data.forEach(entry => {
+                                        allEntries.push(entry);
+                                    });
+                                } catch (e) {
+                                    console.error(`Error parsing data for key ${key}:`, e);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Sort entries by date and then by member order
+                allEntries.sort((a, b) => {
+                    // Sort by date first
+                    const dateComparison = new Date(a.date) - new Date(b.date);
+                    if (dateComparison !== 0) {
+                        return dateComparison;
+                    }
+                    // Then sort by member order
+                    const memberOrderA = allMembers.indexOf(a.name);
+                    const memberOrderB = allMembers.indexOf(b.name);
+                    return memberOrderA - memberOrderB;
+                });
+
+                let csvContent = "日付,名前,工作番号,金型番号,作業番号,開始時間,終了時間,作業内容,備考1,備考2\n";
+                allEntries.forEach(entry => {
+                    csvContent += `"${entry.date}","${entry.name}","${entry.workNumber}","${entry.moldNumber}","${entry.taskNumber}","${entry.startTime}","${entry.endTime}","${entry.workContent}","${entry.remarks1}","${entry.remarks2}"\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                if (link.download !== undefined) { // feature detection
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", "作業票集計.csv");
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            });
+
+            backToLoginButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

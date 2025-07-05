@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業票確認</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calendar-container {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .calendar-header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .calendar-header button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .calendar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .day-name {
+            font-weight: bold;
+            text-align: center;
+            padding: 10px 0;
+            background-color: #e9e9e9;
+        }
+        .day {
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 80px;
+            text-align: right;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .day:hover {
+            background-color: #f0f0f0;
+        }
+        .day.current-month {
+            background-color: #f9f9f9;
+        }
+        .day.has-data {
+            background-color: #e0f2f7;
+            border-color: #2196f3;
+        }
+        .day-number {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .back-button {
+            display: block;
+            margin: 20px auto;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: fit-content;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        #member-list-container {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .member-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .member-item:last-child {
+            border-bottom: none;
+        }
+        .status-icon {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .status-icon.ok {
+            color: green;
+        }
+        .status-icon.ng {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>作業票確認</h1>
+        <div class="calendar-header">
+            <button id="prev-month">前月</button>
+            <h2 id="current-month-year"></h2>
+            <button id="next-month">次月</button>
+        </div>
+        <div class="calendar-container" id="calendar">
+            <div class="day-name">日</div>
+            <div class="day-name">月</div>
+            <div class="day-name">火</div>
+            <div class="day-name">水</div>
+            <div class="day-name">木</div>
+            <div class="day-name">金</div>
+            <div class="day-name">土</div>
+        </div>
+        <div id="member-list-container" style="display: none;">
+            <h2><span id="selected-date"></span>の作業票状況</h2>
+            <div id="member-list"></div>
+        </div>
+        <button id="back-to-login" class="back-button">ログイン画面に戻る</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const calendarEl = document.getElementById('calendar');
+            const currentMonthYearEl = document.getElementById('current-month-year');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const backToLoginBtn = document.getElementById('back-to-login');
+            const memberListContainer = document.getElementById('member-list-container');
+            const memberListEl = document.getElementById('member-list');
+            const selectedDateEl = document.getElementById('selected-date');
+
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+
+            const allMembers = [
+                '幸徳', '高木', '堀井', '藤原', '松尾', '小田', '甲斐', '加智', '横井',
+                '近岡', '田中', '小林', '林田', '土田', '千田', '山田', '後藤', '出口', '松浦', '中嶋', '梁村'
+            ];
+
+            function renderCalendar() {
+                calendarEl.innerHTML = `
+                    <div class="day-name">日</div>
+                    <div class="day-name">月</div>
+                    <div class="day-name">火</div>
+                    <div class="day-name">水</div>
+                    <div class="day-name">木</div>
+                    <div class="day-name">金</div>
+                    <div class="day-name">土</div>
+                `;
+                currentMonthYearEl.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+
+                const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday, etc.
+
+                // Fill leading empty days
+                for (let i = 0; i < firstDayOfWeek; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.classList.add('day');
+                    calendarEl.appendChild(emptyDay);
+                }
+
+                // Fill days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('day', 'current-month');
+                    dayEl.innerHTML = `<span class="day-number">${day}</span>`;
+
+                    const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    
+                    // Check if any member has data for this date
+                    let hasAnyData = false;
+                    for (const member of allMembers) {
+                        const storageKey = `${member}_${formattedDate}`;
+                        if (localStorage.getItem(storageKey)) {
+                            hasAnyData = true;
+                            break;
+                        }
+                    }
+
+                    if (hasAnyData) {
+                        dayEl.classList.add('has-data');
+                    }
+
+                    dayEl.addEventListener('click', () => {
+                        displayMemberList(formattedDate);
+                    });
+                    calendarEl.appendChild(dayEl);
+                }
+            }
+
+            function displayMemberList(date) {
+                selectedDateEl.textContent = date;
+                memberListEl.innerHTML = '';
+                memberListContainer.style.display = 'block';
+
+                allMembers.forEach(member => {
+                    const memberItem = document.createElement('div');
+                    memberItem.classList.add('member-item');
+                    const storageKey = `${member}_${date}`;
+                    const hasData = localStorage.getItem(storageKey) !== null;
+                    const statusIcon = hasData ? '<span class="status-icon ok">〇</span>' : '<span class="status-icon ng">❌</span>';
+                    memberItem.innerHTML = `<span>${member}</span> ${statusIcon}`;
+                    memberListEl.appendChild(memberItem);
+                });
+            }
+
+            prevMonthBtn.addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar();
+                memberListContainer.style.display = 'none'; // Hide list when month changes
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar();
+                memberListContainer.style.display = 'none'; // Hide list when month changes
+            });
+
+            backToLoginBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+
+            renderCalendar();
+        });
+    </script>
+</body>
+</html>
