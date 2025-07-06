@@ -128,9 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('保存されたデータの読み込み中にエラーが発生しました。');
                 // Fallback to an empty form for the date
                 populateFormData([
-                    { date: dateParam, name: name }
+                    { date: dateParam, name: name, startTime: '08:00' }
                 ]);
             }
+        } else {
+            // If no data, add one empty row with the date from the URL
+            populateFormData([
+                { date: dateParam, name: name, startTime: '08:00' }
+            ]);
         }
     } else {
         // If no date param, set today's date as default and populate an empty form
@@ -141,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const todayDate = `${yyyy}-${mm}-${dd}`;
         currentSaveDate = todayDate; // Set the save date to today
         populateFormData([
-            { date: todayDate, name: name }
+            { date: todayDate, name: name, startTime: '08:00' }
         ]);
     }
 
@@ -151,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastEndTime = lastEntryBlock.querySelector('[name^="end-time"]').value;
 
         // Use currentSaveDate for new rows
-        form.appendChild(createEntryBlockElement({ date: currentSaveDate, name: name, startTime: lastEndTime }));
+        form.appendChild(createEntryBlockElement({ date: currentSaveDate, name: name, startTime: lastEndTime || '08:00' }));
     });
 
     saveButton.addEventListener('click', () => {
